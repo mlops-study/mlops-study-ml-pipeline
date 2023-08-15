@@ -1,0 +1,7 @@
+# Default ignored files
+modules.xml
+/misc.xml
+/mlops-study-ml-pipeline.iml
+/inspectionProfiles/profiles_settings.xml
+/vcs.xml
+/workspace.xml

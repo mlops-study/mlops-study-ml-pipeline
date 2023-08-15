@@ -1,3 +1,4 @@
+import pendulum
 from textwrap import dedent
 from datetime import datetime, timedelta
 
@@ -6,25 +7,27 @@ from airflow.operators.bash import BashOperator
 
 from support.callback_functions import success_callback, failure_callback
 
-with DAG(
-        dag_id='my_first_airflow_dag',
-        default_args={
-            "owner": "mlops.study",
-            "depends_on_past": False,
-            "email": ["mlops.study@gmail.com"],
-            "email_on_failure": False,
-            "email_on_retry": False,
-            "retries": 1,
-            "retry_delay": timedelta(minutes=5),
-            'on_failure_callback': failure_callback,
-            'on_success_callback': success_callback,
-        },
-        description='우리가 처음 만들어 보는 Airflow Dag 입니다.',
-        schedule="0 8 * * *",
-        start_date=datetime(2023, 5, 1),
-        catchup=False,
-        tags=["mlops", "study"],
-) as dag:
+# 로컬 타임존 생성
+local_timezone = pendulum.timezone("Asia/Seoul")
+
+with DAG(dag_id='my_first_airflow_dag',
+         default_args={
+             "owner": "mlops.study",
+             "depends_on_past": False,
+             "email": ["mlops.study@gmail.com"],
+             "email_on_failure": False,
+             "email_on_retry": False,
+             "retries": 1,
+             "retry_delay": timedelta(minutes=5),
+             "on_failure_callback": failure_callback,
+             "on_success_callback": success_callback,
+         },
+         description='우리가 처음 만들어 보는 Airflow Dag 입니다.',
+         schedule="0 8 * * *",
+         start_date=datetime(2023, 5, 1, tzinfo=local_timezone),
+         catchup=False,
+         tags=["mlops", "study"],
+         ) as dag:
     task1 = BashOperator(
         task_id="print_date",
         bash_command="date",

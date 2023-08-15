@@ -1,27 +1,28 @@
+import pendulum
 from datetime import datetime
 from airflow import DAG
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from support.callback_functions import success_callback, failure_callback
 
+local_timezone = pendulum.timezone("Asia/Seoul")
 conn_id = "feature_store"
 
-with DAG(
-        dag_id="data_extract_pipeline",
-        default_args={
-            "owner": "mlops.study",
-            "depends_on_past": False,
-            "email": ["mlops.study@gmail.com"],
-            "on_failure_callback": failure_callback,
-            "on_success_callback": success_callback,
-        },
-        description="데이터추출_파이프라인",
-        schedule=None,
-        start_date=datetime(2023, 5, 1),
-        catchup=False,
-        tags=["mlops", "study"],
-) as dag:
+with DAG(dag_id="data_extract_pipeline",
+         default_args={
+             "owner": "mlops.study",
+             "depends_on_past": False,
+             "email": ["mlops.study@gmail.com"],
+             "on_failure_callback": failure_callback,
+             "on_success_callback": success_callback,
+         },
+         description="데이터추출_파이프라인",
+         schedule=None,
+         start_date=datetime(2023, 5, 1, tzinfo=local_timezone),
+         catchup=False,
+         tags=["mlops", "study"],
+         ) as dag:
     task1_sql = """
-            create database if not exists temp
+        create database if not exists temp
         """
     task1 = SQLExecuteQueryOperator(
         task_id="create_database_temp",
